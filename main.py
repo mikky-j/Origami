@@ -69,6 +69,7 @@ class Origami:
         reddit = self.initialize_reddit_client()
         subreddit = reddit.subreddit(sub)
         hottest_post = subreddit.hot(limit=limit)
+        gotten = 0
 
         for post in hottest_post:  # getting post submission so that I can look at the comments
             post_submission = reddit.submission(id=post.id)
@@ -83,28 +84,37 @@ class Origami:
                         # Getting the body of the comments
                         body = comments.body
 
+                        print("Trying to get a link")
+
                         # Complex regex just to get 1366 x 768
                         match = re.search(
                             r"\[[1-9×]+\]\([\w+://\.\-×]+\)", body)
-                        start, end = match.span()
-                        link = body[start:end]
-                        print(link)
+                        if match != None:
+                            start, end = match.span()
+                            link = body[start:end]
+                            print(link)
 
-                        # looping over the matches even tho it's just one. I guess I need to fix this when I come online
-                        # for match in m:
-                        print(post.title)
-                        print("Getting an image")
+                            # looping over the matches even tho it's just one. I guess I need to fix this when I come online
+                            # for match in m:
+                            print(post.title)
+                            # print("Getting an image")
 
-                        downloaded = self.download_file(post.title, link)
-                        if downloaded:
+                            # downloaded = self.download_file(post.title, link)
                             self.write_to_file(link)
+                            gotten += 1
 
                         # Getting the image using requests so that we can get the raw bytes of the image
+                            print("\n")
+
+        print("-"*32, "Statistics", "-"*32)
+        print(f"Tried:\t {limit}")
+        print(f"Gotten:\t {gotten}")
 
 
 def main():
+    number = int(input("Enter the number of posts that you want to collect: "))
     origami = Origami()
-    origami.wallpaper_getter("wallpaper", 10)
+    origami.wallpaper_getter("wallpaper", number)
 
 
 main()
