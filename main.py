@@ -117,4 +117,6 @@ def main():
     origami.wallpaper_getter("wallpaper", number)
 
 
-main()
+if __name__ == "__main__":
+    main()
+
