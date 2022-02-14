@@ -1,4 +1,3 @@
-#! usr/env/python3
 import os
 import re
 import praw
@@ -20,8 +19,8 @@ class Origami:
         self.wallpaper_folder = "/home/dami/Downloads/wallpapers/"
         self.prevId = set()
         self.newId = set()
-        if os.path.exists("new.txt"):
-            with open("new.txt", "r") as file:
+        if os.path.exists("previous.txt"):
+            with open("previous.txt", "r") as file:
                 lines = file.readlines()
                 for line in lines:
                     self.prevId.add(line.strip())
@@ -71,8 +70,8 @@ class Origami:
 
     # def check_to_file(self):
     #     tempSet = set()
-    #     if os.path.exists("new.txt"):
-    #         with open("new.txt", "r") as file:
+    #     if os.path.exists("previous.txt"):
+    #         with open("previous.txt", "r") as file:
     #             lines = file.readlines()
     #             for line in lines:
     #                 self.prevLinks.add(line.strip())
@@ -85,7 +84,7 @@ class Origami:
     def write_to_file(self):
         # tempSet = self.check_to_file()
 
-        with open("new.txt", "a", encoding="utf-8") as file:
+        with open("previous.txt", "a", encoding="utf-8") as file:
             for id in self.newId:
                 print(f"Writing {id} to file")
                 file.write(id+"\n")
