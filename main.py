@@ -151,4 +151,6 @@ def main():
     origami.write_to_file()
 
 
-main()
+if __name__ == "__main__":
+    main()
+
