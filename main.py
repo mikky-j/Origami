@@ -1,3 +1,4 @@
+#! usr/env/python3
 import os
 import re
 import praw
