@@ -5,6 +5,7 @@ import praw
 from decouple import config
 import requests
 import shutil
+from screeninfo import get_monitors
 
 
 class Origami:
@@ -20,12 +21,17 @@ class Origami:
         self.wallpaper_folder = "/home/dami/Downloads/wallpapers/"
         self.prevId = set()
         self.newId = set()
+        self.screen_height = 0
+        self.screen_width = 0
+
+        for m in get_monitors():
+            self.screen_height, self.screen_width = m.height, m.width
+
         if os.path.exists("previous.txt"):
             with open("previous.txt", "r") as file:
                 lines = file.readlines()
                 for line in lines:
                     self.prevId.add(line.strip())
-        print(self.prevId)
 
     def initialize_reddit_client(self):
         reddit_authorized = praw.Reddit(
@@ -101,23 +107,28 @@ class Origami:
                     # Getting the body of the comments
                     body = comments.body
 
-                    # Complex regex just to get 1366 x 768
-                    match = re.search(
-                        r"\[[1-9×]+\]\([\w+://\.\-×]+\)", body)
-                    if match != None:
-                        start, end = match.span()
-                        link = body[start:end]
-                        link = link[11: len(link) - 1]
-                        # looping over the matches even tho it's just one. I guess I need to fix this when I come online
-                        # for match in m:
-                        # downloaded = self.download_file(post.title, link)
-                        # self.write_to_file(link)
-                        print(f"Title: \t{post.title}")
+                    # Complex regex just to get the pic in your resolution
+                    # Thinking of just getting the highest resolution but i'm still torn
+                    if self.screen_width == self.screen_height == 0:
+                        print("Couldn't get your screen size ")
+                        return False
+                    else:
+                        match = re.search(
+                            rf"\[{self.screen_width}×{self.screen_height}\]\([a-z://\.\-0-9×]+\)", body)
+                        if match != None:
+                            start, end = match.span()
+                            link = body[start:end]
+                            link = link[11: len(link) - 1]
+                            # looping over the matches even tho it's just one. I guess I need to fix this when I come online
+                            # for match in m:
+                            # downloaded = self.download_file(post.title, link)
+                            # self.write_to_file(link)
+                            print(f"Title: \t{post.title}")
 
-                        print(f"Link: \t{link}")
-                        self.newId.add(id)
-                        print()
-                        return True
+                            print(f"Link: \t{link}")
+                            self.newId.add(id)
+                            print()
+                            return True
         return False
 
     def wallpaper_getter(self, sub: str, limit: int):
@@ -153,4 +164,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
